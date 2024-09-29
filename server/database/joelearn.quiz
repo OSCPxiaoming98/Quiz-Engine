@@ -1,0 +1,46 @@
+== JOE Quiz Title
+[Problem Group 1 Title]
+This is the statement for problem group one.
+You can add a link to websites like this: ||LINK: http://www.google.com||.
+You can add images like this: i||IMG:http://upload.wikimedia.org/wikipedia/commons/9/9b/Carl_Friedrich_Gauss.jpg||
+The image source can either be a local path, or some web URL. 
+Local image: ||IMG:./localimage.jpg||
+Images can be embedded anywhere: within problem groups, problems or options.
+It also supports syntax highlighting like this:
+||CODE:java:
+int a = 2;
+int b = 3;
+System.out.println(a + b);
+||
+A blank line marks the end of this problem group introduction text and the beginning of the first problem.
+
+MCQ Joe's QUESTION is bla bla bla 
+* Option 1 :: Joe comment why this is wrong
+* Option 2
+*= Option 3 :: Joe comment why this is correct
+
+Again, a blank line marks the end of the options. Here's another problem in
+this problem group. QUESTION bla bla. 
+Quizgen supports displayed equations as well:
+\[
+x=Zy + a - c.
+\]
+* Yes.
+*= No.
+
+You can also have problems with multiple correct responses. MULTIPLE ANSWERS
+Students will be asked to select all that apply, and then submit their
+responses.
+*= Option 1. :: This is an explanation.
+* Option 2.
+* Option 3.
+*= Option 4.
+
+[]
+This problem group has no title and has no introduction. When the text following the start of a new problem group is immediately followed by the options, it is inferred to be a problem.
+*= Yes I understand. :: Great! Here's some latex $\|a + b + c\|.$
+* No. :: Please email me and I'll try to help!
+
+This is another problem in this problem group.
+* This is a great tutorial!
+*= This tutorial can be improved. I'm going to email you with suggestions so you can do a better job.
