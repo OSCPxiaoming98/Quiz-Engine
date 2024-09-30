@@ -1,3 +1,2 @@
 # Quiz Engine
  
-## CISSP Quiz
