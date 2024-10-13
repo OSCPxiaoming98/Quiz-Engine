@@ -27,4 +27,5 @@ export async function readFileContents() {
 }
 
 // Export a test object with the file contents
-export const test = await readFileContents();
+export const quiz = await readFileContents();
+console.log(quiz)

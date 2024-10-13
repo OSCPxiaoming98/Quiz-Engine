@@ -1,6 +1,6 @@
 import Questions from "../models/questionSchema.js";
 import Results from "../models/resultSchema.js";
-import { answers, test } from '../database/data.js'
+import { answers, quiz } from '../database/data.js'
 
 export async function getQuestions(req, res){
     try {
@@ -18,7 +18,7 @@ export async function getQuestions(req, res){
 export async function insertQuestions(req, res) {
     try {
         // Assuming Questions is your MongoDB model
-        const data = await Questions.insertMany({ answers, test });
+        const data = await Questions.insertMany({ answers, quiz });
         res.json({ msg: "Data Saved Successfully!", data });
     } catch (error) {
         res.status(500).json({ error: error.message });

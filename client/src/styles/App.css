@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 :root {
-    --primary-color: #0DFF92;
+    --primary-color: #3a00db;
     --dark-color: #222222;
     --light-color: #f0f0f0;
 }
@@ -172,4 +172,12 @@ input[type=radio]:checked~.text-primary {
 
 .checked::before {
     background: var(--primary-color)
+}
+
+.subtitle {
+    font-size: 1.1em; /* Adjust the size as needed */
+    text-align: left; /* Center the text */
+    color: #FFFFFF; /* Change color if desired */
+    margin-top: 0.5em; /* Add some space above the subtitle */
+    margin-bottom: 0.5em; /* Add some space below the subtitle */
 }

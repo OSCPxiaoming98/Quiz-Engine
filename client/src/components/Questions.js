@@ -14,7 +14,7 @@ export default function Questions({ onChecked }) {
     const question = useSelector(state => state.questions.queue[state.questions.trace])
     const dispatch = useDispatch() 
 
-    console.log(apiData)
+    //console.log(apiData)
 
 
     //if (apiData.questions && apiData.questions.length > 0) { 
@@ -56,7 +56,8 @@ export default function Questions({ onChecked }) {
     return (
         <div className="questions">
             <h1 className="title text-light">{apiData.quizTitle}</h1>
-            <h2 className="text-light">{question?.question}</h2>
+            <h2 className="subtitle text-light">[{question?.problemGroup}]</h2>
+            <h3 className="text-light">{question?.question}</h3>
             
             {question?.content ? (
                 <div className="question-content">

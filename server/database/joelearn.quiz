@@ -37,6 +37,8 @@ responses.
 *= Option 4.
 
 []
+You can add a link to websites like this: ||LINK: http://www.google.com||.
+
 This problem group has no title and has no introduction. When the text following the start of a new problem group is immediately followed by the options, it is inferred to be a problem.
 *= Yes I understand. :: Great! Here's some latex $\|a + b + c\|.$
 * No. :: Please email me and I'll try to help!

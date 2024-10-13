@@ -17,46 +17,88 @@ export const useFetchQuestion = () => {
             try{
 
 
-                const [{elimniate, answers, test}]= await getServerData(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/questions`, (data) => data)
-                //console.log(test[0])
+                const [{answers, quiz}]= await getServerData(`${process.env.REACT_APP_SERVER_HOSTNAME}/api/questions`, (data) => data)
+                const quizgen = [];
+                const linesStartingWithEquals = quiz[0].split('\n').filter(line => line.startsWith('== '));
+                const quizTitle = linesStartingWithEquals[0].replace('== ', '').trim();
+                
+                
+                const problemGroupBlocks = quiz[0]
+                        .split(/\n(?=\[)/) // Split at every newline that precedes a line starting with '['
+                        .slice(1)          // Remove the first element (the quiz title)
+                        .map(block => block.trim()) // Trim whitespace from each block
+                        .filter(Boolean); // Remove any empty blocks
 
+                console.log(problemGroupBlocks)
+                problemGroupBlocks.forEach(problemGroupblock => {
+                    const problemGroup = problemGroupblock.match(/\[(.*?)\]/); // Use regex to find text between brackets
+                    
+
+                    if (problemGroup) {
+                        const title = problemGroup[1].length === 0 ? "NO PROBLEM GROUP" : problemGroup[1]; // Set title based on length
+                        const questionBlocks = problemGroupblock.split(/\n\s*\n/).slice(1);
+                        
+                        
+                        
+                        for(let block of questionBlocks) {
+                            block = block.trim().replace(/^\[\]/, '').trim(); // Remove leading "[]"
+                            const lines = block.trim().split('\n'); // Split block into lines
+                            let questionLines = [];
+                            let options = [];
+                            let isQuestionComplete = false;
+        
+                            for (let line of lines) {
+                                //console.log(line)
+                                if (!isQuestionComplete) {
+                                    if (line.startsWith('*')) {
+                                        // First option found, mark the question as complete
+                                        isQuestionComplete = true;
+                                        options.push(line.replace(/^\*+/g, '').trim()); // Add the first option
+                                    } else {
+                                        // Collect question lines
+                                        questionLines.push(line.trim());
+                                    }
+                                } else {
+                                    // Collect remaining options
+                                    if (line.startsWith('*')) {
+                                        options.push(line.replace(/^\*+/g, '').trim());
+                                    }
+                                }
+                            }
+        
+                            // Create the question object and push it to the quizgen array
+                            if (questionLines.length > 0) {
+                                quizgen.push({
+                                    id: quizgen.length + 1,
+                                    problemGroup: title,
+                                    question: questionLines.join(' '), // Join all question lines into one string
+                                    options: options
+                                });
+                            }
+                        }
+                    }
+                    
+
+    
+                    // Example output
+                    console.log(quizgen);
+
+                });
+                
+                        
+                
+              
                 
 
 
-                const quizTitleMatch = test[0].match(/^== (.+)$/m);
-                const quizTitle = quizTitleMatch ? quizTitleMatch[1] : 'Title not found';
-
-                const quizgen = [];
-                const questionBlocks = test[0].split(/\n\s*\n/).slice(1); // Split and skip the first part
-
-                for (let block of questionBlocks) {
-                    const lines = block.trim().split('\n'); // Split block into lines
-                    const questionLine = lines[0]; // The first line is the question
-                    const options = lines.slice(1) // The remaining lines are options
-                        .filter(line => line.startsWith('*')) // Only keep lines starting with '*'
-                        .map(option => option.replace(/^\*+/g, '').trim()); // Clean up the option lines
-
-                    // Create the question object and push it to the quizgen array
-                    if (questionLine) {
-                        quizgen.push({
-                            id: quizgen.length + 1,
-                            question: questionLine,
-                            options: options
-                        });
-                    }
-                }
-
-                const questions = quizgen.question
-
-                console.log(questions)
-                console.log(quizgen)
+                
                 
         
 
            
                 if(quizgen.length > 0){
                     setGetData(prev => ({...prev, isLoading: false}));
-                    setGetData(prev => ({...prev, apiData: {questions, test, quizTitle}}))
+                    setGetData(prev => ({...prev, apiData: {quizTitle}}))
                   
 
                     dispatch(Action.startExamAction({question : quizgen, answers}))
