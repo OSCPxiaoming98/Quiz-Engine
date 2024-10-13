@@ -3,60 +3,69 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFetchQuestion } from "../hooks/FetchQuestion";
 import { updateResult } from "../hooks/setResult";
 
-
-
-
 export default function Questions({ onChecked }) {
     const [checked, setChecked] = useState(undefined);
+    const [feedbackList, setFeedbackList] = useState([]); // State to hold multiple feedback messages
     const { trace } = useSelector(state => state.questions);
     const result = useSelector(state => state.result.result);
-    const [{isLoading, apiData, serverError}]=useFetchQuestion()
-    const question = useSelector(state => state.questions.queue[state.questions.trace])
-    const dispatch = useDispatch() 
+    const [{ isLoading, apiData, serverError }] = useFetchQuestion();
+    const question = useSelector(state => state.questions.queue[state.questions.trace]);
+    const dispatch = useDispatch();
 
-    //console.log(apiData)
-
-
-    //if (apiData.questions && apiData.questions.length > 0) { 
-    //    console.log(apiData.questions)
-    //    quizContent = apiData?.test ? apiData.test[0] : '';
-    //} else {
-    //    console.log("No questions available.");
-    //}
-
-
-    
     useEffect(() => {
+        dispatch(updateResult({ trace, checked }));
+    }, [checked]);
 
-        dispatch(updateResult({ trace, checked }))
-    }, [checked])
+    useEffect(() => {
+        // Reset feedback list when the question changes
+        setFeedbackList([]);
+    }, [trace]); // Runs when trace changes
 
     function onSelect(i) {
-        onChecked(i)
-        setChecked(i)
-        dispatch(updateResult({ trace, checked }))
+        const selectedOption = question.options[i]; // Get the selected option
+        onChecked(i);
+        setChecked(i);
+        
+        // Append feedback for the current selection to the feedback list only if feedback exists
+        if (selectedOption.feedback) {
+            setFeedbackList(prevFeedback => [
+                ...prevFeedback,
+                { text: selectedOption.text, feedback: selectedOption.feedback }
+            ]);
+        }
+
+        dispatch(updateResult({ trace, checked }));
     }
 
     // Construct the image path, fallback to an empty string if content is not available
     const imageSrc = question?.content ? `/image/${question?.content}` : '';
-    if(isLoading) return <h3 className="text-light">isLoading</h3>
-    if(isLoading) return <h3 className="text-light">{serverError || "Unkown Error"}</h3>
-   
-    //let quizContent = '';  // Declare the variable outside
-    //if (apiData.questions && apiData.questions.length > 0) { 
-    //    quizContent = apiData?.test ? apiData.test[0] : '';
-    //    console.log(quizContent);
-    //} else {
-    //    console.log("No questions available.");
-    //}
-    
-    
 
+    if (isLoading) return <h3 className="text-light">Loading...</h3>;
+    if (serverError) return <h3 className="text-light">{serverError || "Unknown Error"}</h3>;
 
     return (
         <div className="questions">
             <h1 className="title text-light">{apiData.quizTitle}</h1>
             <h2 className="subtitle text-light">[{question?.problemGroup}]</h2>
+
+            {question?.description.map((desc, index) => (
+                <div key={index} className="text-light">
+                    <p>{desc.line}</p>
+                    {desc.IMG && (
+                        <img
+                            src={desc.IMG.startsWith('http') ? desc.IMG : `${process.env.PUBLIC_URL}/image/${desc.IMG}`}
+                            alt={`Description Image ${index}`}
+                            style={{ maxWidth: '100%', height: 'auto' }} // Adjust styles as needed
+                        />
+                    )}
+                    {desc.LINK && (
+                        <a href={desc.LINK} target="_blank" rel="noopener noreferrer" className="link-class">
+                            {desc.LINK} {/* Use the actual link as the displayed text */}
+                        </a>
+                    )}
+                </div>
+            ))}
+
             <h3 className="text-light">{question?.question}</h3>
             
             {question?.content ? (
@@ -68,28 +77,39 @@ export default function Questions({ onChecked }) {
                     />
                 </div>
             ) : (
-                <div className="question-content">
+                <div className="question-content"></div>
+            )}
+
+            <ul key={question?.id}>
+                {question?.options.map((q, i) => (
+                    <li key={i}>
+                        <input 
+                            type="radio"
+                            value={true}
+                            name="options"
+                            id={`q${i}-option`}
+                            onChange={() => onSelect(i)}
+                        />
+                        <label className="text-primary" htmlFor={`q${i}-option`}>
+                            {q.text} {/* Display the option text */}
+                        </label>
+                        <div className={`check ${result[trace] === i ? 'checked' : ''}`}></div>
+                    </li>
+                ))}
+            </ul>
+
+            {/* Conditionally render feedback for selected options with feedback */}
+            {feedbackList.length > 0 && (
+                <div className="feedback text-light">
+                    {feedbackList.map((feedbackItem, index) => (
+                        feedbackItem.feedback && (
+                            <p key={index}>
+                                <strong>{feedbackItem.text}:</strong> {feedbackItem.feedback}
+                            </p>
+                        )
+                    ))}
                 </div>
             )}
-            <ul key={question?.id}>
-                {
-                    question?.options.map((q, i) => (
-                        <li key={i}>
-                            <input 
-                                type="radio"
-                                value={true}
-                                name="options"
-                                id={`q${i}-option`}
-                                onChange={() => onSelect(i)}
-                            />
-                            <label className="text-primary" htmlFor={`q${i}-option`}>{q}</label>
-                            <div className={`check ${result[trace] == i ? 'checked' : ''}`}></div>
-                        </li>
-                    ))
-                }
-            </ul>
         </div>
     );
 }
-
-
