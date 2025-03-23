@@ -26,14 +26,6 @@ export default function Questions({ onChecked }) {
         const selectedOption = question.options[i];
         onChecked(i);
         setChecked(i);
-
-        if (selectedOption.feedback) {
-            setFeedbackList(prevFeedback => [
-                ...prevFeedback,
-                { text: selectedOption.text, feedback: selectedOption.feedback }
-            ]);
-        }
-
         dispatch(updateResult({ trace, checked }));
     }
 
@@ -123,18 +115,6 @@ export default function Questions({ onChecked }) {
                     </li>
                 ))}
             </ul>
-
-            {feedbackList.length > 0 && (
-                <div className="feedback text-light">
-                    {feedbackList.map((feedbackItem, index) => (
-                        feedbackItem.feedback && (
-                            <p key={index}>
-                                <strong>{feedbackItem.text}:</strong> {feedbackItem.feedback}
-                            </p>
-                        )
-                    ))}
-                </div>
-            )}
         </div>
     );
 }
